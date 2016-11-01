@@ -2,9 +2,9 @@ import blackjack
 from pylab import *
 
 
-def run(numEpisodes):
+def run(numEvaluationEpisodes):
     returnSum = 0.0
-    for episodeNum in range(numEpisodes):
+    for episodeNum in range(numEvaluationEpisodes):
         G = 0
         S = blackjack.init()
         A = [1, 0]
@@ -17,7 +17,7 @@ def run(numEpisodes):
             G += R
         print("Episode: ", episodeNum, "Return: ", G)
         returnSum = returnSum + G
-    return returnSum / numEpisodes
+    return returnSum / numEvaluationEpisodes
 
 
 run(2000)

@@ -9,9 +9,12 @@ GAMMA = 1
 
 
 def learn(alpha, eps, numTrainingEpisodes):
+    returnSum = 0.0
     for episodeNum in range(numTrainingEpisodes):
+        G = 0
         S = blackjack.init()
         R, S = blackjack.sample(S, 1)
+        G += R
         while (S):
             Q = Q1[S,:]+Q2[S,:]
             prob1 = np.random.random()
@@ -23,6 +26,7 @@ def learn(alpha, eps, numTrainingEpisodes):
                 A = Q.argmax()
 
             R, S_prime = blackjack.sample(S, A)
+            G += R
             S_prime = int(S_prime)
 
             prob2 = np.random.choice([1, 2])
@@ -33,6 +37,10 @@ def learn(alpha, eps, numTrainingEpisodes):
                 Q2[S, A] = Q2[S, A] + alpha * (R + GAMMA * Q1[S_prime, (Q2[S_prime]).argmax()] - Q2[S, A])
 
             S = S_prime
+        #print("Episode: ", episodeNum, "Return: ", G)
+        returnSum = returnSum + G
+        if episodeNum % 10000 == 0 and episodeNum != 0:
+            print("Average return so far: ", returnSum/episodeNum)
 
 
 def evaluate(numEvaluationEpisodes):
@@ -51,6 +59,5 @@ def evaluate(numEvaluationEpisodes):
     return returnSum / numEvaluationEpisodes
 
 
-learn(0.001,0.01,10000)
-for i in range(10000,91000,100):
-    print(evaluate(i))
+
+learn(0.001,0.01,100000)
