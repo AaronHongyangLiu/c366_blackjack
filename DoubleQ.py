@@ -37,10 +37,10 @@ def learn(alpha, eps, numTrainingEpisodes):
                 Q2[S, A] = Q2[S, A] + alpha * (R + GAMMA * Q1[S_prime, (Q2[S_prime]).argmax()] - Q2[S, A])
 
             S = S_prime
-        print("Episode: ", episodeNum, "Return: ", G)
+        #print("Episode: ", episodeNum, "Return: ", G)
         returnSum = returnSum + G
-        if episodeNum % 10000 == 0 and episodeNum != 0:
-            print("Average return so far: ", returnSum/episodeNum)
+        #if episodeNum % 10000 == 0 and episodeNum != 0:
+         #   print("Average return so far: ", returnSum/episodeNum)
 
 
 def evaluate(numEvaluationEpisodes):
@@ -62,5 +62,16 @@ def policy(state):
     Q = Q1[state,:]+Q2[state,:]
     return Q.argmax()
 
-learn(0.001,0.01,1000000)
-blackjack.printPolicy(policy)
+#learn(0.001,0.01,1000000)
+#blackjack.printPolicy(policy)
+
+# to find the best policy:
+training = 1000000
+for alpha in np.arange(0.002,0.010,0.001):
+    for eps in np.arange(0.01,0.20,0.01):
+        Q1 = 0.00001*rand(181, 2)  # NumPy array of correct size
+        Q2 = 0.00001*rand(181, 2)  # NumPy array of correct size
+        Q1[0,:] = 0
+        Q2[0,:] = 0
+        learn(alpha,eps,training)
+        print("alpha=%f, eps=%f, traning=%d, averageReturn=%f"%(alpha, eps, training, evaluate(1000000)))
