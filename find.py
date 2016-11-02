@@ -80,11 +80,11 @@ def optimal(state):
 #blackjack.printPolicy(optimal)
 
 # to find the best policy:
-training = 1000000
+training = 7000000
 best = [0,0,0,99999999] # alpha,eps,training,error
 P = getOptimal()
-for alpha in np.arange(0.002,0.010,0.001):
-    for eps in np.arange(0.281,0.29,0.001):
+for alpha in np.arange(0.001,0.005,0.001):
+    for eps in np.arange(0.25,0.4,0.01):
         Q1 = 0.00001*rand(181, 2)  # NumPy array of correct size
         Q2 = 0.00001*rand(181, 2)  # NumPy array of correct size
         Q1[0,:] = 0
@@ -92,7 +92,10 @@ for alpha in np.arange(0.002,0.010,0.001):
         learn(alpha,eps,training)
         eP = getOurPolicy()
         error = norm(eP[1:]-P[1:])
+
+        blackjack.printPolicy(policy)
         print("########## ",alpha,eps,training," #######",error)
+        print("==============================")
         if error < best[3]:
             best[0]=alpha
             best[1]=eps
