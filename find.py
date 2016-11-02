@@ -50,8 +50,8 @@ def evaluate(numEvaluationEpisodes):
         S = blackjack.init()
         R, S = blackjack.sample(S, 1)
         while (S):
-            Q = Q1[S,:]+Q2[S,:]
-            A = Q.argmax()
+            #Q = Q1[S,:]+Q2[S,:]
+            A = getOptimal()[S]
             R, S = blackjack.sample(S,A)
             G += R
 
@@ -62,18 +62,42 @@ def policy(state):
     Q = Q1[state,:]+Q2[state,:]
     return Q.argmax()
 
-#learn(0.008,0.16,1000000)
-#blackjack.printPolicy(policy)
+def getOurPolicy():
+    Q = Q1+Q2
+    P = zeros(181)
+    for row in range(181):
+        P[row] = Q[row].argmax()
+    return P
+
+def getOptimal():
+    p = np.array([0] + ([1]*5+[0]*4) + ([1]*1+[0]*8)*2 + ([0]*9)*3 + ([1]*5+[0]*4)*4 +
+                 ([1]*7+[0]*2) + ([1]*6+[0]*3)*7 + ([1]*7+[0]*2)*2)
+    return p
+
+def optimal(state):
+    p=getOptimal()
+    return p[state]
+#blackjack.printPolicy(optimal)
 
 # to find the best policy:
 training = 1000000
+best = [0,0,0,99999999] # alpha,eps,training,error
+P = getOptimal()
 for alpha in np.arange(0.002,0.010,0.001):
-    for eps in np.arange(0.01,0.20,0.01):
+    for eps in np.arange(0.281,0.29,0.001):
         Q1 = 0.00001*rand(181, 2)  # NumPy array of correct size
         Q2 = 0.00001*rand(181, 2)  # NumPy array of correct size
         Q1[0,:] = 0
         Q2[0,:] = 0
         learn(alpha,eps,training)
-        print("\n########## ",alpha,eps,training," #######")
-        blackjack.printPolicy(policy)
-        #print("alpha=%f, eps=%f, traning=%d, averageReturn=%f"%(alpha, eps, training, evaluate(1000000)))
+        eP = getOurPolicy()
+        error = norm(eP[1:]-P[1:])
+        print("########## ",alpha,eps,training," #######",error)
+        if error < best[3]:
+            best[0]=alpha
+            best[1]=eps
+            best[2]=training
+            best[3]=error
+        if error == 0:
+            blackjack.printPolicy(policy)
+print(best)
