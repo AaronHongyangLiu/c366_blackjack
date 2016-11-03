@@ -39,8 +39,8 @@ def learn(alpha, eps, numTrainingEpisodes):
             S = S_prime
         #print("Episode: ", episodeNum, "Return: ", G)
         returnSum = returnSum + G
-        #if episodeNum % 10000 == 0 and episodeNum != 0:
-         #   print("Average return so far: ", returnSum/episodeNum)
+        if episodeNum % 100000 == 0 and episodeNum != 0:
+            print("Average return so far: ", returnSum/episodeNum)
 
 
 def evaluate(numEvaluationEpisodes):
@@ -49,13 +49,15 @@ def evaluate(numEvaluationEpisodes):
         G = 0
         S = blackjack.init()
         R, S = blackjack.sample(S, 1)
+        G += R
         while (S):
-            #Q = Q1[S,:]+Q2[S,:]
-            A = getOptimal()[S]
-            R, S = blackjack.sample(S,A)
+            Q = Q1[S,:]+Q2[S,:]
+            A = Q.argmax()
+            R, S = blackjack.sample(S, A)
             G += R
 
         returnSum = returnSum + G
+
     return returnSum / numEvaluationEpisodes
 
 def policy(state):
@@ -80,11 +82,12 @@ def optimal(state):
 #blackjack.printPolicy(optimal)
 
 # to find the best policy:
-training = 7000000
+training = 1000000
 best = [0,0,0,99999999] # alpha,eps,training,error
 P = getOptimal()
-for alpha in np.arange(0.001,0.005,0.001):
-    for eps in np.arange(0.25,0.4,0.01):
+
+for alpha in [0.002]:
+    for eps in [0.345]:
         Q1 = 0.00001*rand(181, 2)  # NumPy array of correct size
         Q2 = 0.00001*rand(181, 2)  # NumPy array of correct size
         Q1[0,:] = 0
@@ -92,15 +95,15 @@ for alpha in np.arange(0.001,0.005,0.001):
         learn(alpha,eps,training)
         eP = getOurPolicy()
         error = norm(eP[1:]-P[1:])
-
-        blackjack.printPolicy(policy)
+        if error <= 1.5:
+            blackjack.printPolicy(policy)
         print("########## ",alpha,eps,training," #######",error)
-        print("==============================")
+        if error <= 1.5:
+            print("==============",evaluate(1000000),"================\n")
         if error < best[3]:
             best[0]=alpha
             best[1]=eps
             best[2]=training
             best[3]=error
-        if error == 0:
-            blackjack.printPolicy(policy)
+
 print(best)

@@ -49,6 +49,7 @@ def evaluate(numEvaluationEpisodes):
         G = 0
         S = blackjack.init()
         R, S = blackjack.sample(S, 1)
+        G += R
         while (S):
             Q = Q1[S,:]+Q2[S,:]
             A = Q.argmax()
