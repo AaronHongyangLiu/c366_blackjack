@@ -15,7 +15,7 @@ def run(numEvaluationEpisodes):
             a = np.random.choice(A)
             R, S = blackjack.sample(S, a)
             G += R
-        print("Episode: ", episodeNum, "Return: ", G)
+        #print("Episode: ", episodeNum, "Return: ", G)
         returnSum = returnSum + G
     return returnSum / numEvaluationEpisodes
 
